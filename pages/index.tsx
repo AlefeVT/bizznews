@@ -1,3 +1,5 @@
+import React from "react";
+
 function Home() {
   return (
     <div style={styles.container}>
@@ -7,7 +9,13 @@ function Home() {
   );
 }
 
-const styles = {
+interface Styles {
+  container: React.CSSProperties;
+  heading: React.CSSProperties;
+  subHeading: React.CSSProperties;
+}
+
+const styles: Styles = {
   container: {
     display: "flex",
     flexDirection: "column",
