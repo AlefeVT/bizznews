@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import database from "../../../../infra/database";
 
-function status(request: NextApiRequest, response: NextApiResponse) {
+async function status(request: NextApiRequest, response: NextApiResponse) {
+  const result = await database.query("SELECT 1 + 1");
+  console.log(result.rows);
   response.status(200).json({ chave: "valor" });
 }
 
