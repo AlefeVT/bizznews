@@ -18,6 +18,7 @@ async function query(queryObject: string | QueryConfig) {
     return result;
   } catch (error) {
     console.error(error);
+    throw error;
   } finally {
     await client.end();
   }
