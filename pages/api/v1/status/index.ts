@@ -26,7 +26,7 @@ async function status(request: NextApiRequest, response: NextApiResponse) {
     updated_at: updatedAt,
     dependencies: {
       database: {
-        version: "databaseVersionValue",
+        version: databaseVersionValue,
         max_connections: parseInt(databaseMaxConnectionsValue),
         opened_connections: databaseOpenedConectionsValue,
       },
