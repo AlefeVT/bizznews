@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@infra/*": ["infra/*"],
+      "@/*": ["./*"],
+      "@v1/*": ["pages/api/v1/*"]
+    },
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "Node",
