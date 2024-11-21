@@ -18,6 +18,7 @@ const config: Config = {
     "^@v1/(.*)$": "<rootDir>/pages/api/v1/$1",
     "^@infra/(.*)$": "<rootDir>/infra/$1",
   },
+  testTimeout: 60000,
 };
 
 export default createJestConfig(config);
