@@ -15,7 +15,9 @@
     "test:watch": "jest --watchAll --runInBand",
     "migration:create": "node-pg-migrate -m infra/migrations create",
     "migration:up": "node-pg-migrate -m infra/migrations --envPath .env.development up",
-    "wait-for-postgres": "ts-node infra/scripts/wait-for-postgres.ts"
+    "wait-for-postgres": "ts-node infra/scripts/wait-for-postgres.ts",
+    "prepare": "husky",
+    "commit": "cz"
   },
   "author": "",
   "license": "MIT",
@@ -36,16 +38,24 @@
     "@types/jest": "^29.5.14",
     "@types/pg": "^8.11.10",
     "@types/react": "^18.3.12",
+    "commitizen": "^4.3.0",
     "concurrently": "^8.2.2",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.4",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "^28.6.0",
+    "husky": "^9.1.4",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
