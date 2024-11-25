@@ -4,7 +4,7 @@
     "paths": {
       "@infra/*": ["infra/*"],
       "@/*": ["./*"],
-      "@v1/*": ["pages/api/v1/*"]
+      "@v1/*": ["app/api/v1/*"]
     },
     "module": "ESNext",
     "target": "ESNext",
