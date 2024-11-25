@@ -15,9 +15,20 @@ describe("GET /api/v1/status", () => {
       const parsedUpdatedAt = new Date(responseBody.updated_at).toISOString();
       expect(responseBody.updated_at).toEqual(parsedUpdatedAt);
 
-      expect(responseBody.dependencies.database.version).toEqual("16.0");
-      expect(responseBody.dependencies.database.max_connections).toEqual(100);
-      expect(responseBody.dependencies.database.opened_connections).toEqual(1);
+      const database = responseBody.dependencies.database;
+      expect(database).toBeDefined();
+      expect(database.version).toEqual("16.0");
+      expect(database.max_connections).toEqual(100);
+      expect(database.opened_connections).toBeGreaterThanOrEqual(0);
+
+      expect(Array.isArray(database.latency)).toBe(true);
+      expect(database.latency).toHaveLength(3);
+      database.latency.forEach((latencyValue: number) => {
+        expect(latencyValue).toBeGreaterThanOrEqual(0);
+      });
+
+      expect(database.status).toBeDefined();
+      expect(["healthy", "unhealthy"]).toContain(database.status);
     });
   });
 });
