@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import database from "../../../../infra/database";
+import { InternalServerError } from "@infra/errors";
 
 async function status(request: NextApiRequest, response: NextApiResponse) {
   const updatedAt = new Date().toISOString();
@@ -50,10 +51,14 @@ async function status(request: NextApiRequest, response: NextApiResponse) {
       },
     });
   } catch (error) {
-    console.error("Erro ao coletar status do banco de dados:", error);
-    response.status(500).json({
-      error: "Erro ao coletar informações de status do banco de dados",
+    const publicErrorObject = new InternalServerError({
+      cause: error,
     });
+
+    console.log("\n Erro dentro do catch do controller:");
+    console.error(publicErrorObject);
+
+    response.status(500).json(publicErrorObject);
   }
 }
 
