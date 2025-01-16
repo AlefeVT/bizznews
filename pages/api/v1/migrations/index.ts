@@ -3,50 +3,74 @@ import migrationRunner from "node-pg-migrate";
 import { MigrationDirection } from "node-pg-migrate/dist/types";
 import { resolve } from "node:path";
 import database from "@infra/database";
+import { createRouter } from "next-connect";
+import { InternalServerError, MethodNotAllowedError } from "@infra/errors";
 
-export default async function migrations(
+const router = createRouter<NextApiRequest, NextApiResponse>();
+
+router.get(getHandler);
+router.post(postHandler);
+
+export default router.handler({
+  onNoMatch: onNoMatchHandler,
+  onError: onErrorHandler,
+});
+
+function onNoMatchHandler(request: NextApiRequest, response: NextApiResponse) {
+  const publicErrorObject = new MethodNotAllowedError();
+  response.status(publicErrorObject.statusCode).json(publicErrorObject);
+}
+
+function onErrorHandler(
+  error: unknown,
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const allowedMethods = ["GET", "POST"];
-  if (!allowedMethods.includes(request.method as string)) {
-    return response.status(405).json({
-      error: `Method "${request.method}" not allowed`,
-    });
-  }
+  const publicErrorObject = new InternalServerError({
+    cause: error,
+  });
 
+  console.log("\n Erro dentro do catch do next-connect:");
+  console.error(publicErrorObject);
+
+  response.status(500).json(publicErrorObject);
+}
+
+async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   let dbClient;
-  try {
-    dbClient = await database.getNewClient();
-    const defaultMigrationOptions = {
-      dbClient: dbClient,
-      dryRun: true,
-      dir: resolve("infra", "migrations"),
-      direction: "up" as MigrationDirection,
-      verbose: true,
-      migrationsTable: "pgmigrations",
-    };
+  dbClient = await database.getNewClient();
+  const defaultMigrationOptions = {
+    dbClient: dbClient,
+    dryRun: true,
+    dir: resolve("infra", "migrations"),
+    direction: "up" as MigrationDirection,
+    verbose: true,
+    migrationsTable: "pgmigrations",
+  };
 
-    if (request.method === "GET") {
-      const pendingMigrations = await migrationRunner(defaultMigrationOptions);
-      return response.status(200).json(pendingMigrations);
-    }
+  const pendingMigrations = await migrationRunner(defaultMigrationOptions);
+  return response.status(200).json(pendingMigrations);
+}
 
-    if (request.method === "POST") {
-      const migratedMigrations = await migrationRunner({
-        ...defaultMigrationOptions,
-        dryRun: false,
-      });
+async function postHandler(request: NextApiRequest, response: NextApiResponse) {
+  let dbClient;
+  dbClient = await database.getNewClient();
+  const defaultMigrationOptions = {
+    dbClient: dbClient,
+    dryRun: true,
+    dir: resolve("infra", "migrations"),
+    direction: "up" as MigrationDirection,
+    verbose: true,
+    migrationsTable: "pgmigrations",
+  };
 
-      if (migratedMigrations.length > 0) {
-        return response.status(201).json(migratedMigrations);
-      }
-      return response.status(200).json(migratedMigrations);
-    }
-  } catch (error) {
-    console.error(error);
-    throw error;
-  } finally {
-    await dbClient?.end();
+  const migratedMigrations = await migrationRunner({
+    ...defaultMigrationOptions,
+    dryRun: false,
+  });
+
+  if (migratedMigrations.length > 0) {
+    return response.status(201).json(migratedMigrations);
   }
+  return response.status(200).json(migratedMigrations);
 }
