@@ -1,36 +1,13 @@
 import { createRouter } from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
 import database from "../../../../infra/database";
-import { InternalServerError, MethodNotAllowedError } from "@infra/errors";
+import controller from "@infra/controller";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 
 router.get(getHandler);
 
-export default router.handler({
-  onNoMatch: onNoMatchHandler,
-  onError: onErrorHandler,
-});
-
-function onNoMatchHandler(request: NextApiRequest, response: NextApiResponse) {
-  const publicErrorObject = new MethodNotAllowedError();
-  response.status(publicErrorObject.statusCode).json(publicErrorObject);
-}
-
-function onErrorHandler(
-  error: unknown,
-  request: NextApiRequest,
-  response: NextApiResponse,
-) {
-  const publicErrorObject = new InternalServerError({
-    cause: error,
-  });
-
-  console.log("\n Erro dentro do catch do next-connect:");
-  console.error(publicErrorObject);
-
-  response.status(500).json(publicErrorObject);
-}
+export default router.handler(controller.errorHandlers);
 
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const updatedAt = new Date().toISOString();
