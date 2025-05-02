@@ -1,5 +1,6 @@
 import database from "@infra/database";
-import { ValidationError } from "@infra/errors";
+import { NotFoundError, ValidationError } from "@infra/errors";
+import password from "./password";
 
 interface UserInputValues {
   username: string;
@@ -7,9 +8,41 @@ interface UserInputValues {
   password: string;
 }
 
+async function findOneByUsername(username: string) {
+  const userFound = await runSelectQuery(username);
+
+  return userFound;
+
+  async function runSelectQuery(username: string) {
+    const results = await database.query({
+      text: `
+        SELECT
+          *
+        FROM
+          users
+        WHERE
+          LOWER(username) = LOWER($1)
+        LIMIT
+          1
+        ;`,
+      values: [username],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O username informado não foi encontrado no sistema.",
+        action: "Verifique se o username está digitado corretamente.",
+      });
+    }
+
+    return results.rows[0];
+  }
+}
+
 async function create(userInputValues: UserInputValues) {
   await validateUniqueEmail(userInputValues.email);
   await validateUniqueUsername(userInputValues.username);
+  await hashPasswordInObject(userInputValues);
 
   const newUser = await runInsertQuery(userInputValues);
   return newUser;
@@ -56,6 +89,11 @@ async function create(userInputValues: UserInputValues) {
     }
   }
 
+  async function hashPasswordInObject(userInputValues: UserInputValues) {
+    const hashedPassword = await password.hash(userInputValues.password)
+    userInputValues.password = hashedPassword
+  }
+
   async function runInsertQuery(userInputValues: UserInputValues) {
     const results = await database.query({
       text: `
@@ -79,6 +117,7 @@ async function create(userInputValues: UserInputValues) {
 
 const user = {
   create,
+  findOneByUsername
 };
 
 export default user;
