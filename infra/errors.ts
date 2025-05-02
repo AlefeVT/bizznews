@@ -98,7 +98,6 @@ export class MethodNotAllowedError extends Error {
 }
 
 export class NotFoundError extends Error {
-
   action: string;
   statusCode: number;
 

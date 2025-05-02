@@ -16,11 +16,14 @@ async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   return response.status(200).json(userFound);
 }
 
-async function patchHandler(request: NextApiRequest, response: NextApiResponse) {
+async function patchHandler(
+  request: NextApiRequest,
+  response: NextApiResponse,
+) {
   const username = request.query.username as string;
   const userInputValues = request.body;
 
-  const updatedUser =  await user.update(username, userInputValues)
+  const updatedUser = await user.update(username, userInputValues);
 
   return response.status(200).json(updatedUser);
 }

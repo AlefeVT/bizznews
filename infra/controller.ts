@@ -23,7 +23,7 @@ function onErrorHandler(
   if (error instanceof NotFoundError) {
     return response.status(error.statusCode).json(error);
   }
-  
+
   const publicErrorObject = new InternalServerError({
     statusCode: error.statusCode,
     cause: error,
