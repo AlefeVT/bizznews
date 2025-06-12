@@ -37,7 +37,7 @@ async function runPendingMigrations() {
   await migrator.runPendingMigrations();
 }
 
-async function createUser(userObject: UserObject) {
+async function createUser(userObject: UserObject = {}) {
   return await user.create({
     username:
       userObject?.username || faker.internet.username().replace(/[_.-]/g, ""),
