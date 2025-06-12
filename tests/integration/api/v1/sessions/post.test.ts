@@ -2,8 +2,6 @@ import session from "@/models/session";
 import orchestrator from "@/tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 import setCookieParser from "set-cookie-parser";
-import { getMaxAge } from "next/dist/server/image-optimizer";
-import path from "path";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -42,7 +40,7 @@ describe("POST /api/v1/sessions", () => {
     });
 
     test("With correct email but correct password", async () => {
-      const user = await orchestrator.createUser({
+      await orchestrator.createUser({
         email: "email-correto@gmail.com",
       });
 
@@ -70,7 +68,7 @@ describe("POST /api/v1/sessions", () => {
     });
 
     test("With incorrect email and incorrect password", async () => {
-      const user = await orchestrator.createUser();
+      await orchestrator.createUser();
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
         method: "POST",

@@ -1,6 +1,3 @@
-const { unique } = require("next/dist/build/utils");
-const { type } = require("os");
-
 exports.up = (pgm) => {
   pgm.createTable("sessions", {
     id: {
@@ -12,12 +9,12 @@ exports.up = (pgm) => {
     token: {
       type: "varchar(96)",
       notNull: true,
-      unique: true
+      unique: true,
     },
 
     user_id: {
       type: "uuid",
-      notNull: true
+      notNull: true,
     },
 
     // Why timestamp with timezone ? https://justatheory.com/2012/04/postgres-use-timestamptz/
