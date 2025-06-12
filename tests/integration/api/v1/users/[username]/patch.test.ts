@@ -84,11 +84,11 @@ describe("PATCH /api/v1/users/[username]", () => {
 
     test("With duplicated 'email'", async () => {
       await orchestrator.createUser({
-        email: "email1@curso.dev",
+        email: "email1@gmail.com",
       });
 
       const createdUser2 = await orchestrator.createUser({
-        email: "email2@curso.dev",
+        email: "email2@gmail.com",
       });
 
       const response = await fetch(
@@ -99,7 +99,7 @@ describe("PATCH /api/v1/users/[username]", () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: "email1@curso.dev",
+            email: "email1@gmail.com",
           }),
         },
       );

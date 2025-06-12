@@ -3,6 +3,7 @@ import {
   InternalServerError,
   MethodNotAllowedError,
   NotFoundError,
+  UnauthorizedError,
   ValidationError,
 } from "./errors";
 
@@ -16,11 +17,11 @@ function onErrorHandler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  if (error instanceof ValidationError) {
-    return response.status(error.statusCode).json(error);
-  }
-
-  if (error instanceof NotFoundError) {
+  if (
+    error instanceof ValidationError ||
+    error instanceof NotFoundError ||
+    error instanceof UnauthorizedError
+  ) {
     return response.status(error.statusCode).json(error);
   }
 
@@ -28,8 +29,6 @@ function onErrorHandler(
     statusCode: error.statusCode,
     cause: error,
   });
-
-  console.error(publicErrorObject);
 
   response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
